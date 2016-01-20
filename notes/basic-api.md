@@ -1,0 +1,15 @@
+# Use Case for Scalability
+- Sharding
+  - Of HTTP Client Requests to different instances
+  - Routing to micro processes within subnets
+- CPU intensive processing
+  - Iterating over data
+  - Parsing into a constructable Datatype
+- Sharing
+  - Memory
+  - Database
+  - Events
+- Database
+  - Fanning out to multiple instances
+  - Aggregating data from connected peers
+  - Fan out of data amoungst multiple instances
