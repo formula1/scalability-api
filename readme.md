@@ -5,6 +5,54 @@ a single thread to many? or a single server to thousands? Do you want to do it
 in node? Well, you might be crazy but your not alone. This is the start of my
 solution.
 
+# Ideally
+
+```
+
+var SharedMemory = new SharedMemoryClass("http://localhost:12345");
+var Iterator = new IteratorClass(ScalabilityManager);
+var SharedEventEmitter = new SharedEventEmitterClass()
+
+var i = new Iterator([1,2,3,4,5]);
+i.useScope(SharedMemory);
+
+await SharedMemory.set({multiplier: 10});
+var newArray = await i.map(function(number, scope){
+  // everything that happens within this happens in the worker
+  // this is not done localy
+  var multiplier = await scope.get('multiplier');
+  return number * multiplier;
+});
+for(var i = 0; i < 5; i++){
+  assert(newArray[i] === (i + 1) * 10);
+}
+SharedEventEmitter.emit('success!');
+
+// OR
+
+var p = SharedMemory.set({multiplier: 10}).then(function(){
+  return i.map(function(number, scope){
+    // everything that happens within this happens in the worker
+    // this is not done localy
+    return scope.get('multiplier').then(function(multiplier){
+      return number * multiplier
+    });
+  })
+}).then(function(newArray){
+  for(var i = 0; i < 5; i++){
+    assert(newArray[i] === (i + 1) * 10);
+  }
+  return newArray;
+}).then(function(){
+  SharedEventEmitter.emit('success!');
+});
+
+```
+
+# Why are you using javascript? Why the hell are you using promises?
+I might port it to rust if I feel the adrenaline enough
+Using promises because [async/await](https://www.twilio.com/blog/2015/10/asyncawait-the-hero-javascript-deserved.html)
+
 # Concept
 
 Scalability comes in a few flavors
